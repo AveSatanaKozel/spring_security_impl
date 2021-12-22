@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import web.model.Role;
@@ -12,20 +11,20 @@ import web.model.User;
 import web.service.RoleService;
 import web.service.UserService;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Controller
 
 public class UserController {
 
-    UserService userService;
+    private UserService userService;
+    private final RoleService roleService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RoleService roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
     @GetMapping("/admin")
@@ -49,25 +48,30 @@ public class UserController {
                            @RequestParam(required = false, name = "ROLE_USER") String roleUser) {
 
         Set<Role> roles = new HashSet<>();
+
         if (roleAdmin != null) {
-            roles.add(new Role(2, roleAdmin));
+            roles.add(roleService.getRoleByName("ROLE_ADMIN"));
         }
-        System.out.println("adminsRole" + roles);
         if (roleUser != null) {
-            roles.add(new Role(1, roleUser));
+            roles.add(roleService.getRoleByName("ROLE_USER"));
         }
         if (roleAdmin == null && roleUser == null) {
-            roles.add(new Role(1, roleUser));
+            roles.add(roleService.getRoleByName("ROLE_USER"));
         }
-        System.out.println(username);
-        System.out.println(city);
-        System.out.println(email);
-        System.out.println(password);
-        System.out.println(roleAdmin);
-        System.out.println(roleUser);
-        User user = new User(username, city, email, password, roles);
 
-        System.out.println(user);
+//        if (roleAdmin != null) {
+//            roles.add(new Role(2, roleAdmin));
+//        }
+//        if (roleUser != null) {
+//            roles.add(new Role(1, roleUser));
+//        }
+//        if (roleAdmin == null && roleUser == null) {
+//            roles.add(new Role(1, roleUser));
+//        }
+
+        User user = new User(username, city, email, password, roles);
+        user.setRoles(roles);
+
 
         try {
             userService.addUser(user);
