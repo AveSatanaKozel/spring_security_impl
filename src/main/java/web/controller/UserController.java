@@ -94,16 +94,27 @@ public class UserController {
                            @RequestParam(required = false, name = "ROLE_USER") String roleUser) {
 
         Set<Role> roles = new HashSet<>();
-        if (roleAdmin != null) {
-            roles.add(new Role(2, roleAdmin));
 
+        if (roleAdmin != null) {
+            roles.add(roleService.getRoleByName("ROLE_ADMIN"));
         }
         if (roleUser != null) {
-            roles.add(new Role(1, roleUser));
+            roles.add(roleService.getRoleByName("ROLE_USER"));
         }
         if (roleAdmin == null && roleUser == null) {
-            roles.add(new Role(1, roleUser));
+            roles.add(roleService.getRoleByName("ROLE_USER"));
         }
+
+//        if (roleAdmin != null) {
+//            roles.add(new Role(2, roleAdmin));
+//
+//        }
+//        if (roleUser != null) {
+//            roles.add(new Role(1, roleUser));
+//        }
+//        if (roleAdmin == null && roleUser == null) {
+//            roles.add(new Role(1, roleUser));
+//        }
 
         user.setRoles(roles);
 
